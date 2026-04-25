@@ -8,14 +8,22 @@ const router = express.Router();
 const DATA_FILE = path.join(__dirname, '..', 'data', 'contacts.json');
 
 function readData() {
-  if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, '[]');
+  try {
+    if (!fs.existsSync(DATA_FILE)) {
+      fs.writeFileSync(DATA_FILE, '[]');
+    }
+    return JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+  } catch {
+    return [];
   }
-  return JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
 }
 
 function writeData(data) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+  try {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+  } catch {
+    console.log('File write skipped (read-only filesystem)');
+  }
 }
 
 router.post(
